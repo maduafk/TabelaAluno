@@ -3,6 +3,7 @@
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class TabelaAlunos {
 
@@ -29,7 +30,7 @@ public class TabelaAlunos {
 
     public static void main(String[] args) {
         Scanner entrada = new Scanner(System.in);
-        ArrayList<Aluno> alunos = new ArrayList<>();
+        Stack<Aluno> pilhaAlunos = new Stack<>();
         int op;
 
         do {
@@ -38,8 +39,8 @@ public class TabelaAlunos {
             System.out.println("2 - Cadastrar nota");
             System.out.println("3 - Calcular média de um aluno");
             System.out.println("4 - Listar os nomes dos alunos sem notas");
-            System.out.println("5 - Excluir aluno");
-            System.out.println("6 - Excluir nota");
+            System.out.println("5 - Excluir aluno do topo");
+            System.out.println("6 - Excluir nota de um aluno");
             System.out.println("7 - Sair");
             System.out.print("Digite sua opção: ");
             op = entrada.nextInt();
@@ -51,13 +52,17 @@ public class TabelaAlunos {
                 case 1:
                     System.out.print("Digite o nome do Aluno que será cadastrado: ");
                     nome = entrada.nextLine();
-                    alunos.add(new Aluno(nome));
-                    System.out.println("Aluno cadastrado.");
+                    pilhaAlunos.push(new Aluno(nome));
+                    System.out.println("Aluno cadastrado no topo da pilha.");
                     break;
                 case 2:
+                    if (pilhaAlunos.isEmpty()) {
+                        System.out.println("Nenhum aluno cadastrado.");
+                        break;
+                    }
                     System.out.print("Digite o nome do Aluno que receberá a nota: ");
                     nome = entrada.nextLine();
-                    Aluno alunoParaNota = encontrarAluno(alunos, nome);
+                    Aluno alunoParaNota = encontrarAluno(pilhaAlunos, nome);
                     if (alunoParaNota != null) {
                         System.out.print("Digite a nota do Aluno: ");
                         double nota = entrada.nextDouble();
@@ -68,9 +73,13 @@ public class TabelaAlunos {
                     }
                     break;
                 case 3:
+                    if (pilhaAlunos.isEmpty()) {
+                        System.out.println("Nenhum aluno cadastrado.");
+                        break;
+                    }
                     System.out.print("Digite o nome do Aluno para calcular a média: ");
                     nome = entrada.nextLine();
-                    Aluno alunoParaMedia = encontrarAluno(alunos, nome);
+                    Aluno alunoParaMedia = encontrarAluno(pilhaAlunos, nome);
                     if (alunoParaMedia != null) {
                         double media = alunoParaMedia.calcularMedia();
                         System.out.println("Média do aluno " + nome + ": " + media);
@@ -79,28 +88,33 @@ public class TabelaAlunos {
                     }
                     break;
                 case 4:
+                    if (pilhaAlunos.isEmpty()) {
+                        System.out.println("Nenhum aluno cadastrado.");
+                        break;
+                    }
                     System.out.println("Lista de alunos sem notas:");
-                    for (Aluno aluno : alunos) {
+                    for (Aluno aluno : pilhaAlunos) {
                         if (aluno.notas.isEmpty()) {
                             System.out.println(aluno.nome);
                         }
                     }
                     break;
                 case 5:
-                    System.out.print("Digite o nome do Aluno a ser excluído: ");
-                    nome = entrada.nextLine();
-                    Aluno alunoParaExcluir = encontrarAluno(alunos, nome);
-                    if (alunoParaExcluir != null) {
-                        alunos.remove(alunoParaExcluir);
-                        System.out.println("Aluno excluído.");
+                    if (!pilhaAlunos.isEmpty()) {
+                        Aluno alunoExcluido = pilhaAlunos.pop();
+                        System.out.println("Aluno " + alunoExcluido.nome + " excluído do topo da pilha.");
                     } else {
-                        System.out.println("Aluno não encontrado.");
+                        System.out.println("Nenhum aluno para excluir.");
                     }
                     break;
                 case 6:
+                    if (pilhaAlunos.isEmpty()) {
+                        System.out.println("Nenhum aluno cadastrado.");
+                        break;
+                    }
                     System.out.print("Digite o nome do Aluno que terá uma nota excluída: ");
                     nome = entrada.nextLine();
-                    Aluno alunoParaExcluirNota = encontrarAluno(alunos, nome);
+                    Aluno alunoParaExcluirNota = encontrarAluno(pilhaAlunos, nome);
                     if (alunoParaExcluirNota != null) {
                         System.out.println("Notas do aluno:");
                         for (int i = 0; i < alunoParaExcluirNota.notas.size(); i++) {
@@ -130,8 +144,8 @@ public class TabelaAlunos {
         entrada.close();
     }
 
-    private static Aluno encontrarAluno(ArrayList<Aluno> alunos, String nome) {
-        for (Aluno aluno : alunos) {
+    private static Aluno encontrarAluno(Stack<Aluno> pilhaAlunos, String nome) {
+        for (Aluno aluno : pilhaAlunos) {
             if (aluno.nome.equalsIgnoreCase(nome)) {
                 return aluno;
             }

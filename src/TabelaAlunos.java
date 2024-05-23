@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
 
-public class TabelaAlunos {
+public class TabelaAluno {
 
     static class Aluno {
         String nome;
